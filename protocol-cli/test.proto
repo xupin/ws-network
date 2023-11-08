@@ -1,0 +1,13 @@
+package test;
+
+syntax = "proto3";
+
+message login {
+    string username = 1;
+    string password = 2;
+}
+
+message user_info {
+    string username = 1;
+    string message = 2;
+}
