@@ -1,13 +1,14 @@
 syntax = "proto3";
 
-option go_package = "./protocol";
+package test;
+option go_package = "./pb";
 
-message login {
+message C2S_Login {
     string username = 1;
     string password = 2;
 }
 
-message user_info {
+message S2C_UserInfo {
     string username = 1;
     string message = 2;
 }

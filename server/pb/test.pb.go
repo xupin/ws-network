@@ -4,7 +4,7 @@
 // 	protoc        v3.21.9
 // source: test.proto
 
-package protocol
+package pb
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Login struct {
+type C2S_Login struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -29,8 +29,8 @@ type Login struct {
 	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 }
 
-func (x *Login) Reset() {
-	*x = Login{}
+func (x *C2S_Login) Reset() {
+	*x = C2S_Login{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_test_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -38,13 +38,13 @@ func (x *Login) Reset() {
 	}
 }
 
-func (x *Login) String() string {
+func (x *C2S_Login) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Login) ProtoMessage() {}
+func (*C2S_Login) ProtoMessage() {}
 
-func (x *Login) ProtoReflect() protoreflect.Message {
+func (x *C2S_Login) ProtoReflect() protoreflect.Message {
 	mi := &file_test_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,26 +56,26 @@ func (x *Login) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Login.ProtoReflect.Descriptor instead.
-func (*Login) Descriptor() ([]byte, []int) {
+// Deprecated: Use C2S_Login.ProtoReflect.Descriptor instead.
+func (*C2S_Login) Descriptor() ([]byte, []int) {
 	return file_test_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Login) GetUsername() string {
+func (x *C2S_Login) GetUsername() string {
 	if x != nil {
 		return x.Username
 	}
 	return ""
 }
 
-func (x *Login) GetPassword() string {
+func (x *C2S_Login) GetPassword() string {
 	if x != nil {
 		return x.Password
 	}
 	return ""
 }
 
-type UserInfo struct {
+type S2C_UserInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -84,8 +84,8 @@ type UserInfo struct {
 	Message  string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 }
 
-func (x *UserInfo) Reset() {
-	*x = UserInfo{}
+func (x *S2C_UserInfo) Reset() {
+	*x = S2C_UserInfo{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_test_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -93,13 +93,13 @@ func (x *UserInfo) Reset() {
 	}
 }
 
-func (x *UserInfo) String() string {
+func (x *S2C_UserInfo) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserInfo) ProtoMessage() {}
+func (*S2C_UserInfo) ProtoMessage() {}
 
-func (x *UserInfo) ProtoReflect() protoreflect.Message {
+func (x *S2C_UserInfo) ProtoReflect() protoreflect.Message {
 	mi := &file_test_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -111,19 +111,19 @@ func (x *UserInfo) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserInfo.ProtoReflect.Descriptor instead.
-func (*UserInfo) Descriptor() ([]byte, []int) {
+// Deprecated: Use S2C_UserInfo.ProtoReflect.Descriptor instead.
+func (*S2C_UserInfo) Descriptor() ([]byte, []int) {
 	return file_test_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *UserInfo) GetUsername() string {
+func (x *S2C_UserInfo) GetUsername() string {
 	if x != nil {
 		return x.Username
 	}
 	return ""
 }
 
-func (x *UserInfo) GetMessage() string {
+func (x *S2C_UserInfo) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
@@ -133,17 +133,17 @@ func (x *UserInfo) GetMessage() string {
 var File_test_proto protoreflect.FileDescriptor
 
 var file_test_proto_rawDesc = []byte{
-	0x0a, 0x0a, 0x74, 0x65, 0x73, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x3f, 0x0a, 0x05,
-	0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d,
-	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x22, 0x41, 0x0a,
-	0x09, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73,
-	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73,
-	0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-	0x42, 0x0c, 0x5a, 0x0a, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x0a, 0x0a, 0x74, 0x65, 0x73, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x43, 0x0a, 0x09,
+	0x43, 0x32, 0x53, 0x5f, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65,
+	0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65,
+	0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72,
+	0x64, 0x22, 0x44, 0x0a, 0x0c, 0x53, 0x32, 0x43, 0x5f, 0x55, 0x73, 0x65, 0x72, 0x49, 0x6e, 0x66,
+	0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x0a,
+	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -160,8 +160,8 @@ func file_test_proto_rawDescGZIP() []byte {
 
 var file_test_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_test_proto_goTypes = []interface{}{
-	(*Login)(nil),    // 0: login
-	(*UserInfo)(nil), // 1: user_info
+	(*C2S_Login)(nil),    // 0: C2S_Login
+	(*S2C_UserInfo)(nil), // 1: S2C_UserInfo
 }
 var file_test_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -178,7 +178,7 @@ func file_test_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_test_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Login); i {
+			switch v := v.(*C2S_Login); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -190,7 +190,7 @@ func file_test_proto_init() {
 			}
 		}
 		file_test_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserInfo); i {
+			switch v := v.(*S2C_UserInfo); i {
 			case 0:
 				return &v.state
 			case 1:

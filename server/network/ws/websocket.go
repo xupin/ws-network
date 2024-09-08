@@ -39,27 +39,11 @@ const (
 	DefaultHeartbeatInterval = 300
 )
 
-// Message 定义了一个消息实体.
 type Message struct {
-	// MessageType The message types are defined in RFC 6455, section 11.8.
 	MessageType int
-	// Data 消息内容
-	Data []byte
+	Data        []byte
 }
 
-// Conn 长连接接口
-type Conn interface {
-	// Close 关闭连接
-	Close() error
-	// Open 开启连接
-	Open(w http.ResponseWriter, r *http.Request) error
-	// Receive 接收数据
-	Receive() (msg *Message, err error)
-	// Write 写入数据
-	Write(msg *Message) (err error)
-}
-
-// Connection 维护的长连接.
 type Connection struct {
 	// id 标识id
 	id string
@@ -81,24 +65,12 @@ type Connection struct {
 	isClosed bool
 }
 
-// Options 可选参数
 type Options struct {
-	// InChanSize 读队列大小, 默认1024
-	InChanSize int
-	// OutChanSize 写队列大小, 默认1024
-	OutChanSize int
-	// HeartbeatInterval 心跳检测间隔, 当心跳间隔大于这个时间连接将断开, 默认300s
+	InChanSize        int
+	OutChanSize       int
 	HeartbeatInterval int
 }
 
-// upgrade http升级websocket协议的配置. 允许所有CORS跨域请求.
-var upgrade = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-// NewConnection 新建 Connection实例.
 func NewConnection(opts ...*Options) *Connection {
 	inChanSize, outChanSize := DefaultInChanSize, DefaultOutChanSize
 	heartbeatInterval := DefaultHeartbeatInterval
@@ -125,7 +97,6 @@ func NewConnection(opts ...*Options) *Connection {
 	}
 }
 
-// close 关闭连接
 func (c *Connection) Close() error {
 	_ = c.conn.Close()
 	c.mutex.Lock()
@@ -137,8 +108,12 @@ func (c *Connection) Close() error {
 	return nil
 }
 
-// Open 开启连接
 func (c *Connection) Open(w http.ResponseWriter, r *http.Request) error {
+	upgrade := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
 	conn, err := upgrade.Upgrade(w, r, nil)
 	if err != nil {
 		return err
@@ -149,7 +124,6 @@ func (c *Connection) Open(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-// readLoop 监听客户端消息
 func (c *Connection) readLoop() {
 	for {
 		msgType, data, err := c.conn.ReadMessage()
@@ -168,7 +142,6 @@ func (c *Connection) readLoop() {
 	}
 }
 
-// writeLoop 向连接写入数据
 func (c *Connection) writeLoop() {
 	timer := time.NewTimer(time.Duration(c.heartbeatInterval) * time.Second)
 	defer timer.Stop()
@@ -176,24 +149,12 @@ func (c *Connection) writeLoop() {
 		select {
 		case msg := <-c.outChan:
 			_ = c.conn.WriteMessage(msg.MessageType, msg.Data)
-		case <-timer.C:
-			if !c.isAlive() {
-				_ = c.Close()
-				return
-			}
-			timer.Reset(time.Duration(c.heartbeatInterval) * time.Second)
 		case <-c.closeChan:
 			return
 		}
 	}
 }
 
-// isAlive 判断连接是否活跃
-func (c *Connection) isAlive() bool {
-	return time.Since(c.lastHeartbeatTime) <= time.Duration(c.heartbeatInterval)*time.Second
-}
-
-// error
 func (r *Connection) error() error {
 	return errors.New("connection already closed")
 }
@@ -208,7 +169,6 @@ func (c *Connection) Receive() (msg *Message, err error) {
 	return
 }
 
-// Write 写入数据
 func (c *Connection) Write(msg *Message) (err error) {
 	select {
 	case c.outChan <- msg:
@@ -218,17 +178,10 @@ func (c *Connection) Write(msg *Message) (err error) {
 	return
 }
 
-// GetConnID 获取连接ID
 func (c *Connection) GetConnID() string {
 	return c.id
 }
 
-// GetRemoteAddr 获取远程地址
 func (c *Connection) GetRemoteAddr() net.Addr {
 	return c.conn.RemoteAddr()
-}
-
-// KeepHeartbeat 保持心跳
-func (c *Connection) KeepHeartbeat() {
-	c.lastHeartbeatTime = time.Now()
 }

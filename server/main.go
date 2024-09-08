@@ -2,19 +2,18 @@ package main
 
 import (
 	"fmt"
-	"game-protocol/network"
-	"game-protocol/network/ws"
-	"game-protocol/protocol"
 	"net/http"
+
+	"github.com/xupin/protocol-demo/network/ws"
+	"github.com/xupin/protocol-demo/pb"
+	"github.com/xupin/protocol-demo/utils/packet"
 
 	"google.golang.org/protobuf/proto"
 )
 
 type Agent struct {
-	Id     string
-	Socket *ws.Connection
-	Packet *network.Packet
-	Player int32
+	Id   string
+	Conn *ws.Connection
 }
 
 func main() {
@@ -33,59 +32,41 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// 关闭连接
 	defer conn.Close()
 	agent := &Agent{
-		Id:     conn.GetConnID(),
-		Socket: conn,
+		Id:   conn.GetConnID(),
+		Conn: conn,
 	}
 	for {
 		// 读取消息
-		msg, err := agent.Socket.Receive()
+		msg, err := agent.Conn.Receive()
 		if err != nil {
 			break
 		}
 		switch msg.MessageType {
-		case ws.TextMessage:
-			conn.Write(&ws.Message{
-				MessageType: ws.TextMessage,
-				Data:        msg.Data,
-			})
-			conn.KeepHeartbeat()
 		case ws.BinaryMessage:
-			// 解包
-			packet := &network.Packet{
-				Bytes: msg.Data,
+			cmd, p := packet.Decode(msg.Data)
+			if cmd != "C2S_Login" {
+				fmt.Println("非法协议", cmd)
+				continue
 			}
-			packet.Decode()
-			// 触发协议函数
-			agent.Packet = packet
-			agent.Receive()
+			req := &pb.C2S_Login{}
+			proto.Unmarshal(p, req)
+			fmt.Printf("登录用户: %s \n", req.Username)
+
+			resp := &pb.S2C_UserInfo{
+				Username: req.Username,
+				Message:  "你好, " + req.Username,
+			}
+			agent.Send("S2C_UserInfo", resp)
 		default:
 			fmt.Printf("消息类型不支持: %d \n", msg.MessageType)
 		}
 	}
 }
 
-func (r *Agent) Receive() {
-	fmt.Printf("触发协议: %s \n", r.Packet.Protocol)
-	// 接收
-	pb := &protocol.Login{}
-	proto.Unmarshal(r.Packet.Bytes, pb)
-	fmt.Printf("登录用户: %s \n", pb.Username)
-	// 发送
-	pb1 := &protocol.UserInfo{
-		Username: pb.Username,
-		Message:  "你好, " + pb.Username,
-	}
-	bytes, _ := proto.Marshal(pb1)
-	r.Send("user_info", bytes)
-}
-
-func (r *Agent) Send(protocol string, bytes []byte) {
-	packet := network.Packet{
-		Protocol: protocol,
-		Bytes:    bytes,
-	}
-	r.Socket.Write(&ws.Message{
+func (r *Agent) Send(cmd string, resp proto.Message) {
+	p, _ := proto.Marshal(resp)
+	r.Conn.Write(&ws.Message{
 		MessageType: ws.BinaryMessage,
-		Data:        packet.Encode(),
+		Data:        packet.Encode(cmd, p),
 	})
 }

@@ -4,35 +4,33 @@ const connection = new WebSocket("ws://127.0.0.1:9501");
 
 connection.onopen = async function () {
     // 登录
-    send("login", {
-        username: "pp", password: "pass"
-    })
+    send("C2S_Login", {
+        username: "pp",
+        password: "pass",
+    });
     console.log("send done");
 };
 
 connection.onmessage = (event: any) => {
-    const packet = new Packet();
-    const eventData = event.data;
-    if (typeof eventData == "string") {
-        console.log(`event: ${event} data: ${eventData}`);
+    const resp = event.data;
+    if (typeof resp == "string") {
+        console.log(`event: ${event} data: ${resp}`);
         return;
     }
     try {
-        let data = packet.decode(eventData);
-        const protocol = packet.getProtocol();
+        let cmd,
+            data = Packet.decode(resp);
         // 53位长整数问题
         data = fixLongNumber(data);
-        console.log(`message: ${protocol} resp: ${JSON.stringify(data)}`);
+        console.log(`message: ${cmd} resp: ${JSON.stringify(data)}`);
     } catch (error) {
         console.log(error);
     }
 };
 
-function send(event: string, data: any) {
-    if (typeof (event) == "string") {
-        const packet = new Packet();
-        packet.setProtocol(event);
-        const buffer = packet.encode(data);
+function send(cmd: string, data: any) {
+    if (typeof cmd == "string") {
+        const buffer = Packet.encode(cmd, data);
         connection.send(buffer);
     } else {
         console.log("event is not a string");
@@ -71,5 +69,5 @@ function fixLongNumber(data: any): any {
 }
 
 function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }

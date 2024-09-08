@@ -1,4 +1,4 @@
-module game-protocol
+module github.com/xupin/protocol-demo
 
 go 1.18
 
